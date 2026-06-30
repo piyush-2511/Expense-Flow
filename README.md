@@ -10,6 +10,9 @@ ExpenseFlow lets users log their daily expenses, tag them by category, search an
 
 ---
 
+## 🧭 Preview
+![UI Photos](./src/assets/photo.png)
+
 ## ✨ Features
 
 ### 🔐 Authentication
@@ -133,7 +136,7 @@ src/
     client.ts              ← single Supabase client instance
     authService.ts         ← signUp, signIn, signOut, getSession
     expenseService.ts      ← getExpenses, addExpense, updateExpense, deleteExpense
-    tagService.ts          ← addTags, deleteTagsByExpense, searchByTag
+    tagService.ts          ←  addTagsdeleteTagsByExpense, searchByTag
     profileService.ts      ← getProfile
 
   auth/
@@ -203,7 +206,7 @@ User visits app
 
 ---
 
-## 🚀 Build Order (Recommended)
+## 🚀 Build Order
 
 ```
 PHASE 1 — Foundation (no UI yet)
