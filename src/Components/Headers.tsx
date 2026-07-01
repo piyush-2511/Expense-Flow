@@ -47,7 +47,8 @@ export default function Headers() {
         {/* Right side: username + theme toggle + sign out */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="hidden md:inline text-xs text-gray-400 dark:text-gray-500 mr-1">
-            {user?.email}
+            {user?.user_metadata.username}
+            {console.log(user)}
           </span>
 
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
