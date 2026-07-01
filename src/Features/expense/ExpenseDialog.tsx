@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../Hooks/useAuth'
 import { useAddExpense, useUpdateExpense } from './expenseQueries'
+import TagPicker from './TagPicker'
 import type { Expense } from '../../supabase/ExpenseService'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
-  editingExpense?: Expense | null   // pass an expense to edit, omit to add new
+  editingExpense?: Expense | null
 }
 
 const todayISO = () => new Date().toISOString().split('T')[0]
@@ -18,43 +19,37 @@ export default function ExpenseDialog({ isOpen, onClose, editingExpense }: Props
 
   const isEditMode = Boolean(editingExpense)
 
-  const [amount, setAmount] = useState(editingExpense?.amount.toString() ?? '')
-  const [description, setDescription] = useState(editingExpense?.description ?? '')
-  const [date, setDate] = useState(editingExpense?.date ?? todayISO())
-  const [tagInput, setTagInput] = useState('')
-  const [tags, setTags] = useState<string[]>(editingExpense?.tags ?? [])
+  const [amount, setAmount] = useState('')
+  const [description, setDescription] = useState('')
+  const [date, setDate] = useState(todayISO())
+  const [tags, setTags] = useState<string[]>([])
   const [formError, setFormError] = useState('')
 
+  // ── Sync form state whenever editingExpense changes ──
+  // useState initial values only run once, so we need this effect
+  // to correctly populate the form when switching between expenses
+  useEffect(() => {
+    if (editingExpense) {
+      setAmount(editingExpense.amount.toString())
+      setDescription(editingExpense.description)
+      setDate(editingExpense.date)
+      setTags(editingExpense.tags)
+    } else {
+      setAmount('')
+      setDescription('')
+      setDate(todayISO())
+      setTags([])
+    }
+    setFormError('')
+  }, [editingExpense, isOpen])
+
   if (!isOpen) return null
-
-  const addTag = () => {
-    const trimmed = tagInput.trim()
-    if (!trimmed) return
-    if (tags.includes(trimmed)) {
-      setTagInput('')
-      return
-    }
-    setTags(prev => [...prev, trimmed])
-    setTagInput('')
-  }
-
-  const removeTag = (tag: string) => {
-    setTags(prev => prev.filter(t => t !== tag))
-  }
-
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault()
-      addTag()
-    }
-  }
 
   const resetForm = () => {
     setAmount('')
     setDescription('')
     setDate(todayISO())
     setTags([])
-    setTagInput('')
     setFormError('')
   }
 
@@ -76,8 +71,6 @@ export default function ExpenseDialog({ isOpen, onClose, editingExpense }: Props
       setFormError('Enter a description')
       return
     }
-
-    console.log(user.id)
     if (!user) return
 
     try {
@@ -175,40 +168,12 @@ export default function ExpenseDialog({ isOpen, onClose, editingExpense }: Props
             />
           </div>
 
-          {/* Tags */}
+          {/* Tags — replaced free-text input with TagPicker */}
           <div>
-            <label className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1 block">
+            <label className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2 block">
               Tags
             </label>
-            <input
-              type="text"
-              placeholder="Food, Travel, Vegetables… (Enter to add)"
-              value={tagInput}
-              onChange={e => setTagInput(e.target.value)}
-              onKeyDown={handleTagKeyDown}
-              onBlur={addTag}
-              className="w-full bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-gray-100 px-4 py-2.5 outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-50 dark:focus:ring-blue-900/30 transition-all"
-            />
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="flex items-center gap-1 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 text-xs font-medium px-2.5 py-1 rounded-full"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      aria-label={`Remove ${tag} tag`}
-                      className="hover:text-blue-800 dark:hover:text-blue-200"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
+            <TagPicker selectedTags={tags} onChange={setTags} />
           </div>
 
           {formError && (
@@ -222,11 +187,7 @@ export default function ExpenseDialog({ isOpen, onClose, editingExpense }: Props
             disabled={isSubmitting}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-sm font-semibold py-2.5 rounded-xl transition-all active:scale-[0.98] mt-1"
           >
-            {isSubmitting
-              ? 'Saving…'
-              : isEditMode
-              ? 'Save changes'
-              : 'Add expense'}
+            {isSubmitting ? 'Saving…' : isEditMode ? 'Save changes' : 'Add expense'}
           </button>
         </form>
       </div>

@@ -6,7 +6,8 @@ import ThemeToggle from './ThemeToggle'
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/expenses', label: 'My Expenses' },
-  // { to: '/expenses/new', label: 'Enter Expense' },
+  { to: '/tags', label: 'Add Tags' },
+  { to: '/analysis', label: 'Monthly Analysis' },
 ]
 
 export default function Headers() {

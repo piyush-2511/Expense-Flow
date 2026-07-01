@@ -8,8 +8,9 @@ import AuthPage from './Components/AuthPage'
 import ProtectedRoute from './Components/ProtectedRoute'
 import AppLayout from './Components/AppLayout'
 import ExpensesPage from './Features/expense/ExpensesPage'
-import EnterExpensePage from './Features/expense/ExpensesPage'
 import DashboardPage from './Features/Dashboard/DashboardPage'
+import AddTagsPage from './Features/expense/AddTagPage'
+import MonthlyAnalysisPage from './Features/Dashboard/MonthlyAnalysisPage'
 
 export default function App() {
   const dispatch = useAppDispatch()
@@ -26,19 +27,23 @@ export default function App() {
     return unsubscribe
   }, [dispatch])
 
+  if (isLoading) return null
+
   return (
     <BrowserRouter>
       <Routes>
 
+        {/* Public route — redirect to dashboard if already logged in */}
         <Route
           path="/auth"
           element={
-            isLoading ? null : isAuthenticated
+            isAuthenticated
               ? <Navigate to="/dashboard" replace />
               : <AuthPage />
           }
         />
 
+        {/* Protected routes — all share AppLayout (header + outlet) */}
         <Route
           element={
             <ProtectedRoute>
@@ -46,13 +51,15 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/expenses" element={<ExpensesPage />} />
-          <Route path="/expenses/new" element={<EnterExpensePage />} />
+          <Route path="/dashboard"  element={<DashboardPage />} />
+          <Route path="/expenses"   element={<ExpensesPage />} />
+          <Route path="/tags"       element={<AddTagsPage />} />
+          <Route path="/analysis"   element={<MonthlyAnalysisPage />} />
         </Route>
 
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* Fallbacks */}
+        <Route path="/"  element={<Navigate to="/dashboard" replace />} />
+        <Route path="*"  element={<Navigate to="/dashboard" replace />} />
 
       </Routes>
     </BrowserRouter>

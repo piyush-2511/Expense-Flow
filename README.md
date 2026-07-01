@@ -125,48 +125,74 @@ Row Level Security (RLS) enabled on all tables — users can only read and write
 | Search tag input | Local `useState` | Component-level UI |
 | Dialog open/close | Local `useState` | Component-level UI |
 | Theme | `useTheme` hook + localStorage | UI preference, not app data |
-
 ---
 
 ## 📁 Folder Structure
 
 ```
-src/
-  supabase/
-    client.ts              ← single Supabase client instance
-    authService.ts         ← signUp, signIn, signOut, getSession
-    expenseService.ts      ← getExpenses, addExpense, updateExpense, deleteExpense
-    tagService.ts          ←  addTagsdeleteTagsByExpense, searchByTag
-    profileService.ts      ← getProfile
-
-  auth/
-    AuthPage.tsx            ← login + signup form
-    authSlice.ts            ← Redux slice — wraps authService in async thunks
-
-  features/
-    expenses/
-      ExpensesPage.tsx
-      ExpenseDialog.tsx
-      ExpenseItem.tsx
-      expenseQueries.ts     ← TanStack Query hooks — wrap expenseService directly
-    dashboard/
-      DashboardPage.tsx
-      PieChart.tsx          ← calls get_tag_totals RPC
-      DigitalClock.tsx
-      CalendarHeatmap.tsx   ← calls get_daily_totals RPC
-
-  components/
-    Header.tsx
-    ThemeToggle.tsx
-    ProtectedRoute.tsx      ← checks Redux session, redirects if missing
-
-  store/
-    store.ts
-    hooks.ts                ← useAppDispatch, useAppSelector
-
-  hooks/
-    useTheme.ts
-    useAuth.ts               ← thin wrapper over authSlice selectors
+project-root/
+├── src/
+│   ├── Components/
+│   │   ├── AppLayout.tsx
+│   │   ├── AuthPage.tsx
+│   │   ├── Headers.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   └── ThemeToggle.tsx
+│   │
+│   ├── config/
+│   │   └── config.ts
+│   │
+│   ├── Features/
+│   │   ├── auth/
+│   │   │   └── authSlice.ts
+│   │   │
+│   │   ├── Dashboard/
+│   │   │   ├── CalendarHeat...tsx
+│   │   │   ├── DashboardPa...tsx
+│   │   │   ├── dashboardQu...ts
+│   │   │   ├── DigitalClock.tsx
+│   │   │   └── PieChart.tsx
+│   │   │
+│   │   └── expense/
+│   │       ├── EnterExpense....tsx
+│   │       ├── ExpenseDialo...tsx
+│   │       ├── ExpenseItem....tsx
+│   │       ├── expenseQueri...ts
+│   │       ├── Expense....tsx
+│   │       └── placeholders.tsx
+│   │
+│   ├── Hooks/
+│   │   ├── useAuth.ts
+│   │   └── useTheme.ts
+│   │
+│   ├── store/
+│   │   ├── hooks.ts
+│   │   └── store.ts
+│   │
+│   ├── supabase/
+│   │   ├── authService.ts
+│   │   ├── client.ts
+│   │   ├── dashboardServ....ts
+│   │   ├── ExpenseService....ts
+│   │   └── profileService.ts
+│   │
+│   ├── App.css
+│   ├── App.tsx
+│   ├── index.css
+│   ├── main.tsx
+│   └── queryClient.ts
+│
+├── .env
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── README.md
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
 
 ### Layered architecture — each layer only knows the one below it
