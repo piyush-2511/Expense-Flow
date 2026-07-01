@@ -63,7 +63,7 @@ export default function PieChart() {
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(Number(value ?? 0))}
               contentStyle={{
                 borderRadius: 12,
                 border: '1px solid #e5e7eb',
